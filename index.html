@@ -146,6 +146,25 @@
             line-height: 1.6;
         }
 
+        .hours-counter {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: #4a90e2;
+            font-weight: 900;
+            margin: 2rem 0;
+            text-shadow: 
+                0 0 15px rgba(74, 144, 226, 0.9),
+                0 0 25px rgba(74, 144, 226, 0.6);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .hours-label {
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            color: #6ba3f0;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
         .timestamp {
             font-size: clamp(0.9rem, 2vw, 1.1rem);
             color: #6ba3f0;
@@ -219,12 +238,15 @@
         <h2 class="missing-banner">MISSING</h2>
         
         <div class="info-box">
-            <div class="status-text">
+            <div class="hours-counter" id="hoursCounter">0</div>
+            <div class="hours-label">Hours Missing</div>
+            
+            <div class="status-text" style="margin-top: 2rem;">
                 <span class="alert-indicator"></span>
                 STATUS: ACTIVE SEARCH
             </div>
             <div class="status-text">
-                Last seen: Unknown
+                Last seen: 7:00 AM today
             </div>
             <div class="status-text">
                 Priority: HIGH
@@ -256,6 +278,23 @@
             }
         }
 
+        // Calculate hours missing since 7 AM today
+        function updateHoursMissing() {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 7, 0, 0);
+            
+            // If it's before 7 AM today, use yesterday's 7 AM
+            if (now < today) {
+                today.setDate(today.getDate() - 1);
+            }
+            
+            const diffMs = now - today;
+            const diffHours = diffMs / (1000 * 60 * 60);
+            
+            const hoursCounter = document.getElementById('hoursCounter');
+            hoursCounter.textContent = diffHours.toFixed(1);
+        }
+
         // Update timestamp
         function updateTimestamp() {
             const now = new Date();
@@ -275,8 +314,10 @@
 
         // Initialize
         createParticles();
+        updateHoursMissing();
         updateTimestamp();
-        setInterval(updateTimestamp, 1000);
+        setInterval(updateHoursMissing, 60000); // Update every minute
+        setInterval(updateTimestamp, 1000); // Update every second
     </script>
 </body>
 </html>
